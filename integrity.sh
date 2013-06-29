@@ -17,7 +17,7 @@ imp() {
     done
 }
 
-# default blocksize bzip2
+## default blocksize bzip2
 bzip2recover $arg1
 
 # Corrupt file 
@@ -39,13 +39,8 @@ done
 
 echo "BAD FILES:"
 imp ${BADFILES[@]}  
-#i=0
-#while [ $i -le $n ]; do
-#    printf "%s\n" "${BADFILES[i]}"
-#    ((i++))
-#done
 
-# DECOMPRESS
+## DECOMPRESS
 echo "DECOMPRESS:"
 sleep 3
 #bunzip2 rec*bz2
@@ -57,7 +52,7 @@ while read l; do
     fi
 done < $FILE
 
-# JOINs
+## JOINs
 echo "JOINs:"
 declare -a PART
 tarn=1
@@ -78,5 +73,18 @@ PART[$tarn]=$TAR_FILE
 #
 echo "GOOD FILES:"
 imp ${PART[@]}  
+
+## RECOVERY
 echo "RECOVERY"
 sleep 3
+
+for x in ${PART[@]}; do
+   EXTF="process_$x"
+   echo "Processing" $x 
+   perl find_tar_headers.pl $x | tee recovery.log  
+   pos=$(awk -F':' '{print $2}' recovery.log | head -n1)
+   tail -c +${pos} $x > $EXTF
+   echo "Extracting..." $EXTF
+   tar xvf $EXTF
+done
+
