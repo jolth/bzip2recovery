@@ -10,6 +10,13 @@ arg1=$1
 bad_dir="bad_files"
 FILE="good_file"
 
+# function imp
+imp() {
+    for c in $@; do
+        echo $c
+    done
+}
+
 # default blocksize bzip2
 bzip2recover $arg1
 
@@ -31,15 +38,16 @@ for i in $(ls -l rec*bz2 | awk -F'\ ' '{print $9}'); do
 done
 
 echo "BAD FILES:"
-
-i=0
-while [ $i -le $n ]; do
-    printf "%s\n" "${BADFILES[i]}"
-    ((i++))
-done
+imp ${BADFILES[@]}  
+#i=0
+#while [ $i -le $n ]; do
+#    printf "%s\n" "${BADFILES[i]}"
+#    ((i++))
+#done
 
 # DECOMPRESS
-echo "DECOMPRESS"
+echo "DECOMPRESS:"
+sleep 3
 #bunzip2 rec*bz2
 while read l; do
     f="$l.bz2"
@@ -50,7 +58,8 @@ while read l; do
 done < $FILE
 
 # JOINs
-echo "JOINs"
+echo "JOINs:"
+declare -a PART
 tarn=1
 TAR_FILE="part_$tarn.tar"
 while read x; do
@@ -59,8 +68,15 @@ while read x; do
         cat $x >> $TAR_FILE
     else
         echo "End: $TAR_FILE"
+        PART[$tarn]=$TAR_FILE
         ((++tarn))
         TAR_FILE="part_$tarn.tar"
-        sleep 3
+        sleep 1
     fi
 done < $FILE
+PART[$tarn]=$TAR_FILE
+#
+echo "GOOD FILES:"
+imp ${PART[@]}  
+echo "RECOVERY"
+sleep 3
