@@ -3,7 +3,7 @@
 # Author: Jorge Toro [jolthgs@gmail.com]
 #
 # usage: 
-#        ./integridad.sh the_bad_backup.tar.bz2
+#        ./bzip2recovery.sh the_bad_backup.tar.bz2
 #
 declare -a BADFILES
 arg1=$1
