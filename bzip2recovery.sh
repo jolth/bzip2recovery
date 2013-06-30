@@ -24,7 +24,7 @@ bzip2recover $arg1
 mkdir $bad_dir
 
 n=0
-for i in $(ls -l rec*bz2 | awk -F'\ ' '{print $9}'); do
+for i in $(ls -l rec*bz2 | awk '{print $9}'); do
     bunzip2 -t $i 2> /dev/null 
     if [ "$?" != "0" ]; then
         echo "Bad File: " $i
